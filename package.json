@@ -1,0 +1,27 @@
+{
+  "name": "h3_mdvtsvr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alansif/h3_mdvtsvr.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alansif/h3_mdvtsvr/issues"
+  },
+  "homepage": "https://github.com/alansif/h3_mdvtsvr#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
+    "iconv-lite": "^0.4.24",
+    "moment": "^2.24.0",
+    "mysql": "^2.17.1"
+  }
+}

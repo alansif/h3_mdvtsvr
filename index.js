@@ -23,7 +23,8 @@ const filepath = 'C:/Users/Administrator/Desktop/huasan/182';
 const getFileIds = () => {
     let files = fs.readdirSync(filepath)
     	.filter(fn => fn.startsWith("SerialPlugin.dat"))
-	    .map(fn => parseInt(fn.slice(16)));
+        .map(fn => parseInt(fn.slice(16)))
+        .sort();
     return files;
 };
 
@@ -31,7 +32,8 @@ const conn = mysql.createConnection({
     host:       '192.168.160.90',
     user:       'root',
     password:   '1234',
-    database:   'mdvt_schema'
+    database:   'mdvt_schema',
+    dateStrings:true
 });
 
 const query = util.promisify(conn.query).bind(conn);
@@ -40,7 +42,7 @@ const go = async() => {
     try {
         const rows = await query('select max(fileId) from mdvt');
         const n = rows.length > 0 ? rows[0]['max(fileId)'] : 0;
-        const fids = getFileIds().filter(fid => fid > 1557628432992);
+        const fids = getFileIds().filter(fid => fid > n);
         fids.forEach(fid => {
             const fn = path.join(filepath, 'SerialPlugin.dat' + fid);
             const objs = parser.parseFile(fn);
@@ -56,16 +58,26 @@ const go = async() => {
             });
         });
     } finally {
-        conn.end();
+//        conn.end();
     }
 };
 
 //go();
+setInterval(go, 30*1000);
 
 app.get('/api/v1/query', function(req, res) {
+    let fromdate = req.query['fromdate'] || '';
+    let todate = req.query['todate'] || '';
+    if (fromdate.length === 0) fromdate = '2000-01-01';
+    fromdate += ' 00:00:00';
+    if (todate.length === 0) todate = '2039-12-31';
+    todate += ' 23:59:59';
+    let CYCLE = req.query['CYCLE'] || '';
+    let s1 = `select * from mdvt where CycleCompletionDate between '${fromdate}' and '${todate}'`;
+    let s2 = CYCLE.length === 0 ? '' : ` and CYCLE='${CYCLE}'`;
     let f = async function() {
         try{
-            const rows = await query('select * from mdvt');
+            const rows = await query(s1+s2);
             res.status(200).json(rows);
         } catch(err) {
             res.status(500).end();
@@ -73,6 +85,10 @@ app.get('/api/v1/query', function(req, res) {
         }
     };
     f();
+});
+
+app.get('/api/v1/fieldnames', function(req, res) {
+    res.status(200).json(parser.fieldNames);
 });
 
 app.listen(port, () => {

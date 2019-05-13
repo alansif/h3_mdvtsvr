@@ -70,6 +70,16 @@ const searchStrings = [
 		searchFor: /CYCLE\s+:\s(.*)/,
 		outputField: "CYCLE",
 		chinese: "循环"
+	},
+	{
+		searchFor: /TimeBegin/,
+		outputField: "TimeBegin",
+		chinese: "开始时间"
+	},
+	{
+		searchFor: /TimeEnd/,
+		outputField: "TimeEnd",
+		chinese: "结束时间"
 	}
 ];
 
@@ -137,4 +147,4 @@ function parseFile(fn) {
 }
 
 exports.parseFile = parseFile;
-exports.searchStrings = searchStrings;
+exports.fieldNames = searchStrings.reduce((acc,cur)=>{acc[cur.outputField]=cur.chinese;return acc;},{});

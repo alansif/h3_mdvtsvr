@@ -8,7 +8,7 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "*");
-    res.header("Content-Type", "application/json;charset=utf-8");
+//    res.header("Content-Type", "application/json;charset=utf-8");
     next();
 });
 
@@ -17,6 +17,8 @@ const util = require('util');
 const fs = require('fs');
 const path = require('path');
 const parser = require('./medivators');
+
+app.use(express.static('C:/Users/Administrator/h3_mdvtadm/dist'));
 
 const filepath = 'C:/Users/Administrator/Desktop/huasan/182';
 

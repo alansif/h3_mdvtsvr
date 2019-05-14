@@ -2,13 +2,16 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const port = 8665;
+
+app.use(express.static('C:/Users/Administrator/h3_mdvtadm/dist'));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "*");
-//    res.header("Content-Type", "application/json;charset=utf-8");
+    res.header("Content-Type", "application/json;charset=utf-8");
     next();
 });
 
@@ -17,8 +20,6 @@ const util = require('util');
 const fs = require('fs');
 const path = require('path');
 const parser = require('./medivators');
-
-app.use(express.static('C:/Users/Administrator/h3_mdvtadm/dist'));
 
 const filepath = 'C:/Users/Administrator/Desktop/huasan/182';
 
@@ -30,7 +31,7 @@ const getFileIds = () => {
     return files;
 };
 
-const conn = mysql.createConnection({
+const conn = mysql.createPool({
     host:       '192.168.160.90',
     user:       'root',
     password:   '1234',

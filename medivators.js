@@ -80,6 +80,11 @@ const searchStrings = [
 		searchFor: /TimeEnd/,
 		outputField: "TimeEnd",
 		chinese: "结束时间"
+	},
+	{
+		searchFor: /Category/,
+		outputField: "Category",
+		chinese: "洗消分类"
 	}
 ];
 
@@ -89,7 +94,11 @@ const moment = require("moment");
 function stage1(str) {
 	const rgx_begin = /(\d+:[0-5]\d:[0-5]\d [A|P]M)\s+Endoscope disinfection/g;
 	let result_begin = rgx_begin.exec(str);
-	if (!result_begin) return null;
+	if (!result_begin){
+		const rgx_begin1 = /(\d+:[0-5]\d:[0-5]\d [A|P]M)\s+Water line disinfect/g;
+		result_begin = rgx_begin1.exec(str);
+		if (!result_begin) return null;
+	}
 	let time_begin = moment(result_begin[1], "hh:mm:ss A").format("HH:mm:ss");
 	let s00 = str.slice(0, result_begin.index);
 	let s0 = str.slice(rgx_begin.lastIndex);
@@ -124,12 +133,13 @@ function stage00(str) {
 	return recs;
 }
 
-function process(cycles) {
+function process(cycles, c) {
 	let normalizedcs = cycles.map(c => c.replace(/\r\n\s/g, ' ')).filter(e => e.length > 0);
 	let rcs = normalizedcs.map(e => {
 		let r = stage1(e);
 		if (!r) return undefined;
 		let obj = stage00(r.s00);
+		obj.Category = c;
 		obj.TimeBegin = r.time_begin;
 		obj.TimeEnd = r.time_end;
 		obj.Steps = stage2(r.s1);
@@ -138,12 +148,20 @@ function process(cycles) {
 	return rcs;
 }
 
+const category = [["Disinfection cycle log","内镜洗消"], ["Water line disinfect cycle log","自洗消"]];
+
 function parseFile(fn) {
 	let data = fs.readFileSync(fn, "latin1");
 	let str = data.toString();
-	let cycles = str.split('\r\nDisinfection cycle log\r\n');
-	let objs = process(cycles);
-	return objs;
+	for (const c of category) {
+		let index = str.indexOf(c[0]);
+		if (index !== -1) {
+			let cycles = str.split('\r\n' + c[0] + '\r\n');
+			let objs = process(cycles, c[1]);
+			return objs;
+		}
+	}
+	return [];
 }
 
 exports.parseFile = parseFile;

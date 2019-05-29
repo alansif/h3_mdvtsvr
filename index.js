@@ -65,8 +65,19 @@ const go = async() => {
     }
 };
 
-//go();
-setInterval(go, 30*1000);
+function dofile(fid) {
+    const fn = path.join(filepath, 'SerialPlugin.dat' + fid);
+    const objs = parser.parseFile(fn);
+    console.log(objs);
+    objs.forEach(obj => {
+        obj.Steps = JSON.stringify(obj.Steps);
+        obj.fileId = fid;
+        (async() => {
+            const r1 = await query('insert into mdvt set ?', obj);
+            console.log(r1);
+        })();
+    });
+}
 
 app.get('/api/v1/query', function(req, res) {
     let fromdate = req.query['fromdate'] || '';
@@ -76,7 +87,7 @@ app.get('/api/v1/query', function(req, res) {
     if (todate.length === 0) todate = '2039-12-31';
     todate += ' 23:59:59';
     let CYCLE = req.query['CYCLE'] || '';
-    let s1 = `select * from mdvt where CycleCompletionDate between '${fromdate}' and '${todate}'`;
+    let s1 = `select * from mdvt where CycleCompletionDate between '${fromdate}' and '${todate}' order by CycleCompletionDate`;
     let s2 = CYCLE.length === 0 ? '' : ` and CYCLE='${CYCLE}'`;
     let f = async function() {
         try{
@@ -94,6 +105,13 @@ app.get('/api/v1/fieldnames', function(req, res) {
     res.status(200).json(parser.fieldNames);
 });
 
-app.listen(port, () => {
-    console.log("Server is running on port " + port + "...");
-});
+const gfid = process.argv[2];
+if (!gfid) {
+    //go();
+    setInterval(go, 30*1000);
+    app.listen(port, () => {
+        console.log("Server is running on port " + port + "...");
+    });
+} else {
+    dofile(gfid);
+}

@@ -142,7 +142,9 @@ function process(cycles, c) {
 		obj.Category = c;
 		obj.TimeBegin = r.time_begin;
 		obj.TimeEnd = r.time_end;
-		obj.Steps = stage2(r.s1);
+		let rr = stage2(r.s1);
+		rr.push({time:r.time_end, step:'', info:'循环结束'});
+		obj.Steps = rr;
 		return obj;
 	}).filter(obj => !!obj);
 	return rcs;

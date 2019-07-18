@@ -87,11 +87,14 @@ app.get('/api/v1/query', function(req, res) {
     if (todate.length === 0) todate = '2039-12-31';
     todate += ' 23:59:59';
     let CYCLE = req.query['CYCLE'] || '';
-    let s1 = `select * from mdvt where CycleCompletionDate between '${fromdate}' and '${todate}' order by CycleCompletionDate`;
+    let machine = (req.query['machine'] || []).map(v=>`'${v}'`).join();
+    let s1 = `select * from mdvt where CycleCompletionDate between '${fromdate}' and '${todate}'`;
     let s2 = CYCLE.length === 0 ? '' : ` and CYCLE='${CYCLE}'`;
+    let s3 = machine.length === 0 ? '' : ` and MachineSerialNumber in (${machine})`;
+    let s4 = ' order by CycleCompletionDate';
     let f = async function() {
         try{
-            const rows = await query(s1+s2);
+            const rows = await query(s1+s2+s3+s4);
             res.status(200).json(rows);
         } catch(err) {
             res.status(500).end();
@@ -103,6 +106,20 @@ app.get('/api/v1/query', function(req, res) {
 
 app.get('/api/v1/fieldnames', function(req, res) {
     res.status(200).json(parser.fieldNames);
+});
+
+app.get('/api/v1/machines', function(req, res) {
+    let f = async function() {
+        try{
+            const rows = await query("select distinct MachineSerialNumber from mdvt_schema.mdvt order by MachineSerialNumber");
+            const r = rows.map(v=>v.MachineSerialNumber);
+            res.status(200).json(r);
+        } catch(err) {
+            res.status(500).end();
+            console.error(err);
+        }
+    };
+    f();
 });
 
 const gfid = process.argv[2];

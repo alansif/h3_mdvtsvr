@@ -52,7 +52,6 @@ const go = async() => {
             objs.forEach(obj => {
                 obj.Steps = JSON.stringify(obj.Steps);
                 obj.fileId = fid;
-
                 (async() => {
                     const r1 = await query('insert into mdvt set ?', obj);
                     console.log(r1);
@@ -65,10 +64,8 @@ const go = async() => {
     }
 };
 
-function dofile(fid) {
-    const fn = path.join(filepath, 'SerialPlugin.dat' + fid);
+function dofile(fid, fn) {
     const objs = parser.parseFile(fn);
-    console.log(objs);
     objs.forEach(obj => {
         obj.Steps = JSON.stringify(obj.Steps);
         obj.fileId = fid;
@@ -122,13 +119,16 @@ app.get('/api/v1/machines', function(req, res) {
     f();
 });
 
+const prn = require('./rawprn');
+
 const gfid = process.argv[2];
 if (!gfid) {
-    //go();
     setInterval(go, 30*1000);
     app.listen(port, () => {
         console.log("Server is running on port " + port + "...");
     });
+    prn.setHandler(dofile);
 } else {
-    dofile(gfid);
+    const fn = path.join(filepath, 'SerialPlugin.dat' + gfid);
+    dofile(gfid, fn);
 }

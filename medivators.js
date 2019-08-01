@@ -2,7 +2,7 @@ const searchStrings = [
 	{
 		searchFor: /Machine serial number\s+:\s(.*)/,
 		outputField: "MachineSerialNumber",
-		chinese: "机器序列号"
+		chinese: "设备序列号"
 	},
 	{
 		searchFor: /Location\s+:\s(.*)/,
@@ -12,7 +12,7 @@ const searchStrings = [
 	{
 		searchFor: /Endoscope\s+:\s(.*)/,
 		outputField: "Endoscope",
-		chinese: "内镜"
+		chinese: "内镜编号"
 	},
 	{
 		searchFor: /Endoscope type\s+:\s(.*)/,
@@ -22,22 +22,22 @@ const searchStrings = [
 	{
 		searchFor: /Internal ID\s+:\s(.*)/,
 		outputField: "InternalID",
-		chinese: "内部ID"
+		chinese: "内镜ID"
 	},
 	{
 		searchFor: /Serial number\s+:\s(.*)/,
 		outputField: "SerialNumber",
-		chinese: "序列号"
+		chinese: "内镜序列号"
 	},
 	{
 		searchFor: /Hookup\s+:\s(.*)/,
 		outputField: "Hookup",
-		chinese: "连接模块"
+		chinese: "清洗接头"
 	},
 	{
 		searchFor: /Parameter set\s+:\s(.*)/,
 		outputField: "ParameterSet",
-		chinese: "参数设置"
+		chinese: "清洗程序"
 	},
 	{
 		searchFor: /Cycle number\s+:\s(.*)/,
@@ -54,17 +54,17 @@ const searchStrings = [
 	{
 		searchFor: /Operator loading\s+:\s(.*)/,
 		outputField: "OperatorLoading",
-		chinese: "操作者装载"
+		chinese: "装入操作人"
 	},
 	{
 		searchFor: /Operator unloading\s+:\s(.*)/,
 		outputField: "OperatorUnloading",
-		chinese: "操作者卸载"
+		chinese: "取出操作人"
 	},
 	{
 		searchFor: /MRC validation\s+:\s(.*)/,
 		outputField: "MRCValidation",
-		chinese: "浓度确认"
+		chinese: "消毒液浓度测试"
 	},
 	{
 		searchFor: /CYCLE\s+:\s(.*)/,

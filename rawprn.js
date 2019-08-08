@@ -3,6 +3,19 @@ const path = require('path');
 const filepath = 'C:/Users/Administrator/Desktop/huasan';
 
 const net = require('net');
+
+function print(msg) {
+    const client = new net.Socket();
+    client.connect(9100, "192.168.68.210", ()=> {
+        client.write(msg);
+        client.end();
+    });
+    client.on("error",err=>{
+        console.error(err);
+        client.destroy();
+    });
+}
+
 const port = 9100;
 const host = '0.0.0.0';
 
@@ -36,10 +49,11 @@ server.on('connection', function(sock) {
             const fid = "" + Date.now();
             const fn = path.join(filepath, 'SerialPlugin.dat' + fid);
             fs.writeFileSync(fn, sockets[index].data, 'latin1');
+            print(sockets[index].data);
             sockets.splice(index, 1);
             if (handler) handler(fid, fn);
         }
-        console.log(fid + ' CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort);
+        console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort);
     });
 });
 
